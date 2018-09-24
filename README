@@ -1,0 +1,2 @@
+gcc -g -fPIC -shared -o libpreload.so write.c -I/home/philk/src/libcli -L/home/philk/src/libcli -ldl -lpthread -lreadline -lcli
+LD_PRELOAD=./libpreload.so ./a.out
