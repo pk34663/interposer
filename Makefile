@@ -1,18 +1,21 @@
 CFLAGS=-fPIC -shared
 LFLAGS=-L/home/philk/src/libcli
-LIBS=-ldl -lpthread -lcli
-INCLUDE=-I/home/philk/src/libcli
+LIBS=-ldl -lpthread -lcli -lglib-2.0
+INCLUDE=-I/home/philk/src/libcli -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include
 
-.c.o:
-	$(CC) -fPIC -o $@ -c $< $(INCLUDE)
+.cc.o:
+	$(CXX) -fPIC -o $@ -c $< $(INCLUDE)
 
-all: testwrite libpreload.so
+all: testwrite libdelay.so libpreload.so 
 
 testwrite: testwrite.c
-	$(CC) -o $@ $^
+	$(CXX) -o $@ $^
 
-libpreload.so: main.o adminserver.o read.o write.o
-	$(CC) $(CFLAGS) -o $@ $^ $(INCLUDE) $(LFLAGS) $(LIBS)
+libdelay.so: delay.o
+	$(CXX) $(CFLAGS) -o $@ $^ $(INCLUDE) $(LFLAGS) $(LIBS)
+
+libpreload.so: main.o adminserver.o
+	$(CXX) $(CFLAGS) -o $@ $^ $(INCLUDE) $(LFLAGS) $(LIBS)
 
 #main.o: main.c
 #	$(CC) -c -fPIC -o $@ $^ $(INCLUDE)
@@ -25,3 +28,6 @@ libpreload.so: main.o adminserver.o read.o write.o
 
 #write.o: write.c
 #	$(CC) -c -fPIC -o $@ $^
+.PHONY: clean
+clean:
+	rm *.o testwrite libdelay.so libpreload.so
